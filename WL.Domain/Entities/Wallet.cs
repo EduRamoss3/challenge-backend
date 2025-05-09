@@ -7,7 +7,7 @@ namespace WL.Domain.Entities
     public sealed class Wallet : Entity
     {
         public decimal Amount { get; private set; }
-        public Guid Uid { get; set; }
+        public User User { get; private set; }
 
         public decimal GetBalance()
         {

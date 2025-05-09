@@ -9,6 +9,7 @@ namespace WL.Data.Repository.Interfaces
 {
     public interface IUser
     {
-        Task<User> Register(User user); 
+        Task<User?> Register(User user); 
+        Task<User?> AcceptToLogin(string email, string password);
     }
 }

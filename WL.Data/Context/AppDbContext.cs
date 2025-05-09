@@ -15,5 +15,9 @@ namespace WL.Data.Context
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
+        public void Seed()
+        {
+            SaveChanges();
+        }
     }
 }

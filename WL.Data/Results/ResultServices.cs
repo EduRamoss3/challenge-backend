@@ -10,6 +10,6 @@ namespace WL.Data.Results
     {
         public bool HasError { get; set; }
         public string Message { get; set; }
-        public object _Entity { get; set; }
+        public object? _Entity { get; set; }
     }
 }

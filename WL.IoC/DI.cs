@@ -8,6 +8,9 @@ using WL.Data.UnitOfWork.Interfaces;
 using WL.Data.UnitOfWork;
 using WL.Application.Services.Interfaces;
 using WL.Application.Services;
+using FluentValidation;
+using WL.Application.DTO;
+using WL.Application.Validation;
 
 namespace WL.IoC
 {
@@ -27,6 +30,9 @@ namespace WL.IoC
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITransferService, TransferService>();
             services.AddScoped<IWalletService, WalletService>();
+
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IValidator<NormalUserDTO>,UserDTOValidator>();   
 
 
 
