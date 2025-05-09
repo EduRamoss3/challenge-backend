@@ -23,6 +23,22 @@ namespace challenge_backend.Controllers
         {
             _walletService = walletService;
         }
+        [HttpPatch]
+        [Route("update-balance")]
+        public async Task<ActionResult<decimal>> UpdateBalance(Guid uid, Guid walletId, [Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")] decimal amount)
+        {
+            var result = await _walletService.UpdateBalance(uid, walletId, amount);
+            if (result.HasError)
+            {
+                return Problem(
+              detail: "Wallet not found",
+              instance: HttpContext.Request.Path,
+              statusCode: 404,
+              title: "Not founded",
+              type: "https://httpstatuses.com/404");
+            }
+            return Ok(result._Entity);
+        }
         [HttpGet]
         [Route("get-balance")]
         public async Task<ActionResult<decimal>> GetBalance(Guid uid, Guid walletId)
@@ -30,13 +46,17 @@ namespace challenge_backend.Controllers
             var balance = await _walletService.GetBalance(uid, walletId);
             if (balance.HasError)
             {
-                return NotFound(balance.Message);
+                return Problem(
+              detail: "Wallet not found",
+              instance: HttpContext.Request.Path,
+              statusCode: 404,
+              title: "Not founded",
+              type: "https://httpstatuses.com/404");
             }
             return Ok(balance._Entity);
         }
         [HttpPost]
         [Route("create")]
-
         public async Task<ActionResult<WalletDTO?>> Create([FromServices] IValidator<WalletDTO> validate, WalletDTO dto)
         {
             var validating = await validate.ValidateAsync(dto);

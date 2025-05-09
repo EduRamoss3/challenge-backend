@@ -11,5 +11,6 @@ namespace WL.Data.Repository.Interfaces
     {
         Task<Wallet> Create(Wallet wallet);
         Task<Wallet?> SearchWallet(Guid uid, Guid idWallet);
+        Task<Wallet?> Update(Guid walletId, decimal amount);
     }
 }

@@ -12,7 +12,18 @@ namespace WL.Data.Repository
         public WalletRepository(AppDbContext context) : base(context)
         {
         }
-
+        public async Task<Wallet?> Update(Guid id, decimal amount)
+        {
+            var existingWallet = await _context.Wallets.FindAsync(id);
+            if(existingWallet != null)
+            {
+                existingWallet.SetAmount(amount);
+                _context.Entry(existingWallet).Property(p => p.Amount).IsModified = true;
+                await _context.SaveChangesAsync();
+                return existingWallet;
+            }
+            return null;
+        }
         public async Task<Wallet> Create(Wallet wallet)
         {
             try

@@ -1,6 +1,7 @@
 ﻿
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using WL.Domain.Entities.Base;
 
 namespace WL.Domain.Entities
@@ -9,6 +10,7 @@ namespace WL.Domain.Entities
     {
         public decimal Amount { get; private set; }
         public Guid UserId { get; private set; }
+        [JsonIgnore]
         public User User { get;  set; }
 
         public decimal GetBalance()

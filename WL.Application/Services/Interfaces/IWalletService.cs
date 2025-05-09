@@ -14,6 +14,7 @@ namespace WL.Application.Services.Interfaces
     {
         Task<ResultServices> Create(WalletDTO dto);
         Task<ResultServices> GetBalance(Guid uid, Guid idWallet);
+        Task<ResultServices> UpdateBalance(Guid uid, Guid idWallet, decimal amount);
 
     }
 }

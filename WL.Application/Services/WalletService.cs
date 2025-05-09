@@ -35,7 +35,7 @@ namespace WL.Application.Services
                 if(result != null)
                 {
                     msg.Message = "Wallet Successfully created!";
-                    msg._Entity = dto;
+                    msg._Entity = result.Id;
                     msg.HasError = false;
                     return msg;
                 }
@@ -73,5 +73,41 @@ namespace WL.Application.Services
             result._Entity = wallet.GetBalance();
             return result;
         }
+
+        public async Task<ResultServices> UpdateBalance(Guid uid, Guid idWallet, decimal amount)
+        {
+            ResultServices msg = new()
+            {
+                HasError = true,
+            };
+            var user = await _work.UserRepository.GetById(uid);
+
+            if (user != null)
+            {
+                var result = await _work.WalletRepository.Update(idWallet, amount);
+
+                if (result != null)
+                {
+                    msg.Message = "Successfully updated!";
+                    msg._Entity = result;
+                    msg.HasError = false;
+                    return msg;
+                }
+                msg.Message = "Not found wallet!";
+                msg._Entity = null;
+                msg.HasError = true;
+                return msg;
+            }
+            else
+            {
+                msg._Entity = null;
+                msg.HasError = true;
+                msg.Message = "Can't create one wallet without existing user";
+                return msg;
+            }
+
+        }
+
+
     }
 }
