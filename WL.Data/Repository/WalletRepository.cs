@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using WL.Data.Context;
+using WL.Data.Repository.Interfaces;
+using WL.Domain.Entities;
 
 namespace WL.Data.Repository
 {
-    internal class WalletRepository
+    public class WalletRepository : Generic<Wallet>,IWallet
     {
+        public WalletRepository(AppDbContext context) : base(context)
+        {
+        }
+
+        public Task<Wallet> Create(Wallet wallet)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

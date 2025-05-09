@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WL.Application\WL.Application.csproj" />
     <ProjectReference Include="..\WL.Data\WL.Data.csproj" />
   </ItemGroup>
 

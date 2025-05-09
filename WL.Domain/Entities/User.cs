@@ -6,8 +6,9 @@ namespace WL.Domain.Entities
 {
     public class User : Entity
     {
-        public Guid Uid { get; set; }
-        public string? Name { get; private set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
         public Wallet? Wallet { get; private set; }
 
         public Message SetWallet(Wallet wallet)
@@ -28,10 +29,12 @@ namespace WL.Domain.Entities
            
         }
 
-        public User(Guid uid, string? name)
+        public User(string? name, string? email, string? password)
         {
-            Uid = uid;
+            Id = new Guid();
             Name = name;
+            Email = email;
+            Password = password;
         }
     }
 }

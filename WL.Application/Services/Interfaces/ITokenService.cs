@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using WL.Domain.Entities;
 
-namespace WL.Data.Repository.Interfaces
+namespace WL.Application.Services.Interfaces
 {
-    public interface IUser
+    public interface ITokenService
     {
-        Task<User> Register(User user); 
+        public string GenerateToken(User user);
     }
 }

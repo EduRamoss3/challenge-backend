@@ -17,14 +17,16 @@ namespace WL.Data.UnitOfWork
         private ITransfer _transferRepository;
         private IWallet _walletRepository;
 
-        public IUser UserRepository { get { return _userRepository = _userRepository ?? new UserRepository(); } }
-        public ITransfer TransferRepository { get { return _clientRepository = _clientRepository ?? new ClientRepository(_context); } }
-        public IWallet SchedulesRepository { get { return _schedulesRepository = _schedulesRepository ?? new SchedulesRepository(_context); } }
+        public AppDbContext _context;
 
-        public IWallet WalletRepository => throw new NotImplementedException();
+        public UnityOfWork(AppDbContext context)
+        {
+            _context = context;
+        }
 
-        public ITransfer TransferRepository => throw new NotImplementedException();
+        public IUser UserRepository { get { return _userRepository = _userRepository ?? new UserRepository(_context); } }
+        public ITransfer TransferRepository { get { return _transferRepository = _transferRepository ?? new TransferRepository(_context); } }
+        public IWallet WalletRepository { get { return _walletRepository = _walletRepository ?? new WalletRepository(_context); } }
 
-        public IUser UserRepository => throw new NotImplementedException();
     }
 }

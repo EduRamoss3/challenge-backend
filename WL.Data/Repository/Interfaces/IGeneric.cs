@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace WL.Data.Repository.Interfaces
 {
-    internal class IGeneric
+    public interface IGeneric<T>
     {
+        Task<T> GetById(Guid id);
+        Task<IEnumerable<T>> GetAll();
     }
 }
