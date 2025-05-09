@@ -10,6 +10,7 @@ namespace WL.Domain.Entities
         public string? Email { get; set; }
         public string? Password { get; set; }
 
+        public List<Wallet> Wallets { get; set; }
      
         public User(string? name, string? email, string? password)
         {

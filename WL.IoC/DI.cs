@@ -21,7 +21,7 @@ namespace WL.IoC
             services.AddDbContext<AppDbContext>(
                 options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddScoped(typeof(IGeneric<>), typeof(Generic<>));
+            services.AddScoped(typeof(Data.Repository.Interfaces.IGeneric<>), typeof(Data.Repository.Generic<>));
             services.AddScoped<IUser, UserRepository>();
             services.AddScoped<IWallet, WalletRepository>();
             services.AddScoped<ITransfer, TransferRepository>();
@@ -32,7 +32,8 @@ namespace WL.IoC
             services.AddScoped<IWalletService, WalletService>();
 
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IValidator<NormalUserDTO>,UserDTOValidator>();   
+            services.AddScoped<IValidator<NormalUserDTO>,UserDTOValidation>();
+            services.AddScoped<IValidator<WalletDTO>, WalletDTOValidation>();
 
 
 

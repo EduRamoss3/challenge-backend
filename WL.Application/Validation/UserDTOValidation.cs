@@ -3,9 +3,9 @@ using WL.Application.DTO;
 
 namespace WL.Application.Validation
 {
-    public class UserDTOValidator : AbstractValidator<NormalUserDTO>
+    public class UserDTOValidation : AbstractValidator<NormalUserDTO>
     {
-        public UserDTOValidator()
+        public UserDTOValidation()
         {
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage("Name is required!")

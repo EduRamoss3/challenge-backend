@@ -4,7 +4,7 @@ using WL.Data.Repository.Interfaces;
 
 namespace WL.Data.Repository
 {
-    public class Generic<T> : IGeneric<T> where T : class
+    public class Generic<T> : Interfaces.IGeneric<T> where T : class
     {
         protected AppDbContext _context;
 

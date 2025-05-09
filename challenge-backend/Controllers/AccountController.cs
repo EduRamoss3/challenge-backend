@@ -5,6 +5,7 @@ using WL.Application.DTO;
 using WL.Application.Services.Interfaces;
 using WL.Domain.Entities;
 using challenge_backend.Helper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace challenge_backend.Controllers
 {
@@ -18,6 +19,7 @@ namespace challenge_backend.Controllers
         {
             _userService = userService;
         }
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         public async Task<ActionResult<User>> Login([FromServices] ITokenService _tokenService,string email, string password)
@@ -36,7 +38,7 @@ namespace challenge_backend.Controllers
               type: "https://httpstatuses.com/400"
               );
         }
-
+        [AllowAnonymous]
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create([FromServices] IValidator<NormalUserDTO> validate, NormalUserDTO user)

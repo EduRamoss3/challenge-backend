@@ -1,5 +1,6 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations.Schema;
 using WL.Domain.Entities.Base;
 
 namespace WL.Domain.Entities
@@ -7,7 +8,8 @@ namespace WL.Domain.Entities
     public sealed class Wallet : Entity
     {
         public decimal Amount { get; private set; }
-        public User User { get; private set; }
+        public Guid UserId { get; private set; }
+        public User User { get;  set; }
 
         public decimal GetBalance()
         {
@@ -18,5 +20,11 @@ namespace WL.Domain.Entities
             Amount += amount;
             return Amount;
         }
+        public Wallet(Guid userId, decimal amount)
+        {
+            UserId = userId;
+            SetAmount(amount);
+        }
+      
     }
 }

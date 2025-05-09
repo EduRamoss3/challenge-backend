@@ -7,7 +7,7 @@ using WL.Domain.Entities;
 
 namespace WL.Data.Repository.Interfaces
 {
-    public interface IUser
+    public interface IUser : IGeneric<User>
     {
         Task<User?> Register(User user); 
         Task<User?> AcceptToLogin(string email, string password);

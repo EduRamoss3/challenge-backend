@@ -7,8 +7,9 @@ using WL.Domain.Entities;
 
 namespace WL.Data.Repository.Interfaces
 {
-    public interface IWallet
+    public interface IWallet : IGeneric<Wallet>
     {
-        Task<Wallet> Create(Wallet wallet); 
+        Task<Wallet> Create(Wallet wallet);
+        Task<Wallet?> SearchWallet(Guid uid, Guid idWallet);
     }
 }
