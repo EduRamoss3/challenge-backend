@@ -1,0 +1,11 @@
+# Ignorar a pasta .vs (do Visual Studio)
+.vs/
+
+# Ignorar o arquivo FileContextIndex
+FileContextIndex
+
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
