@@ -29,6 +29,19 @@ namespace WL.Data.Repository
             return null;
         }
 
+        public async Task<bool> GetByEmail(string email)
+        {
+           var user = await _context.Users
+                                 .Where(p => p.Email.ToLower() == email.ToLower())
+                                 .Select(p => p.Email)
+                                 .SingleOrDefaultAsync();
+            if(user == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<string?> GetNameById(Guid id)
         {
             return await _context.Users

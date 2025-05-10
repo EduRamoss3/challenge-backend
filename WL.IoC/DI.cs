@@ -11,6 +11,7 @@ using WL.Application.Services;
 using FluentValidation;
 using WL.Application.DTO;
 using WL.Application.Validation;
+using WL.Application.Model;
 
 namespace WL.IoC
 {
@@ -35,6 +36,8 @@ namespace WL.IoC
             services.AddScoped<IValidator<NormalUserDTO>,UserDTOValidation>();
             services.AddScoped<IValidator<WalletDTO>, WalletDTOValidation>();
             services.AddScoped<IValidator<TransferDTO>, TransferDTOValidation>();
+            services.AddScoped<IValidator<LoginModel>, LoginValidation>();
+
 
             return services;
         }

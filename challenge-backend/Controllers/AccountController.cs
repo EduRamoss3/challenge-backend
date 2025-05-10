@@ -6,6 +6,7 @@ using WL.Application.Services.Interfaces;
 using WL.Domain.Entities;
 using challenge_backend.Helper;
 using Microsoft.AspNetCore.Authorization;
+using WL.Application.Model;
 
 namespace challenge_backend.Controllers
 {
@@ -22,9 +23,24 @@ namespace challenge_backend.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<User>> Login([FromServices] ITokenService _tokenService, string email,  string password)
+        public async Task<ActionResult<User>> Login([FromServices] ITokenService _tokenService, [FromBody] LoginModel login, [FromServices] IValidator<LoginModel> validating)
         {
-            var result = await _userService.Login(email, password);
+            var validation = validating.Validate(login);
+            if (!validation.IsValid)
+            {
+                validation.AddToModelState(this.ModelState);
+
+                return Problem(
+                detail: string.Join(" | ", ModelState.Values
+               .SelectMany(v => v.Errors)
+               .Select(e => e.ErrorMessage)),
+                instance: HttpContext.Request.Path,
+                statusCode: 400,
+                title: "Error of validation",
+                type: "https://httpstatuses.com/400"
+                );
+            }
+            var result = await _userService.Login(login);
             if (result != null)
             {
                 var token = _tokenService.GenerateToken(result);

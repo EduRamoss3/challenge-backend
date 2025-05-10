@@ -59,7 +59,7 @@ namespace challenge_backend.Controllers
         }
         [HttpGet]
         [Route("get-balance")]
-        public async Task<ActionResult<decimal>> GetBalance(Guid idWallet)
+        public async Task<ActionResult<decimal>> GetBalance([FromBody]Guid idWallet)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)
@@ -79,7 +79,7 @@ namespace challenge_backend.Controllers
         }
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<ResultWallet>> Create([Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")]decimal amount)
+        public async Task<ActionResult<ResultWallet>> Create([FromBody][Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")]decimal amount)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)

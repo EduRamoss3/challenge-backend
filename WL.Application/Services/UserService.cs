@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Extensions.Logging;
 using WL.Application.DTO;
+using WL.Application.Model;
 using WL.Application.Services.Interfaces;
 using WL.Data.Results;
 using WL.Data.UnitOfWork.Interfaces;
@@ -18,9 +19,9 @@ namespace WL.Application.Services
             _logger = logger;
         }
 
-        public async Task<User?> Login(string email, string password)
+        public async Task<User?> Login(LoginModel model)
         {
-           return await _work.UserRepository.AcceptToLogin(email, password);
+           return await _work.UserRepository.AcceptToLogin(model.Email, model.Password);
             
         }
 
@@ -28,6 +29,11 @@ namespace WL.Application.Services
         {
             try
             {
+                var verifyIfExist = await _work.UserRepository.GetByEmail(dto.Email);
+                if (verifyIfExist)
+                {
+                    return Result<User>.Failure("Already exist an user with this email");
+                }
                 var user = new User(dto.Name, dto.Email, dto.Password); 
 
                 var result = await _work.UserRepository.Register(user);
