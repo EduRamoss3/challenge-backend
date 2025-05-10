@@ -1,3 +1,10 @@
+ ### Tecnologias utilizadas: </br>
+* .NET 8
+* PostgreSQL
+* JWT
+* Swagger
+* ASP.NET Core Web API
+  
  ### Instalação:
 * Clone o repositório: </br>
 * Ajuste a connection string em appsettings.json se necessário </br>
