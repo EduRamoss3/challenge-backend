@@ -45,6 +45,14 @@ builder.Services.AddAuthentication(x =>
         };
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin()  
+                          .AllowAnyMethod()   
+                          .AllowAnyHeader()); 
+});
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -66,14 +74,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

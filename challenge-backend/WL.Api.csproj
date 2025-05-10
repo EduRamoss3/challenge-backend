@@ -7,6 +7,7 @@
     <RootNamespace>challenge_backend</RootNamespace>
     <UserSecretsId>f4137113-45fb-417a-ab93-a97506721d8e</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>

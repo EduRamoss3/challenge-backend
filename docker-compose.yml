@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: challenge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  wl.api:
+    build:
+      context: .
+      dockerfile: challenge-backend/Dockerfile
+    container_name: challenge_api
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:5000
+      ASPNETCORE_Kestrel__Endpoints__Http__Url: http://0.0.0.0:5000
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=challenge;Username=postgres;Password=12345
+
+volumes:
+  postgres_data:
