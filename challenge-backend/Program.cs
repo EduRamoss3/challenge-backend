@@ -58,8 +58,6 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.EnsureCreated();
-
-    // Aplica as migrações somente se o banco já não existir
     if (!dbContext.Database.CanConnect())
     {
         dbContext.Database.Migrate();

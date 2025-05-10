@@ -26,7 +26,5 @@ services:
     environment:
       ASPNETCORE_URLS: http://0.0.0.0:5000
       ASPNETCORE_Kestrel__Endpoints__Http__Url: http://0.0.0.0:5000
-      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=challenge;Username=postgres;Password=12345
-
 volumes:
   postgres_data:
