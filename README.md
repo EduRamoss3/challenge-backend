@@ -2,7 +2,6 @@
 * Clone o repositório: </br>
 * Ajuste a connection string em appsettings.json se necessário </br>
 * Execute: docker compose up --build   </br>
-* O Software auto cria o banco de dados na imagem do PostgreSQL, então não se preocupe com isso.
 * Acesse com a rota base http://localhost:5000/api/v1/    (ou, se realizou alguma mudança no docker, com a porta descrita nas variaveis do  docker compose.)
 * Autenticação http POST /api/v1/Account/login   </br>
 json
