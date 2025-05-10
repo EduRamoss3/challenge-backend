@@ -29,10 +29,18 @@ namespace WL.Data.Repository
             return null;
         }
 
-        public async Task<IEnumerable<Transfer?>> GetByDate(DateOnly date, Guid uid)
+        public async Task<IEnumerable<Transfer?>> GetByDate(DateOnly? date, Guid uid)
         {
-            var transfers = await _context.Transfers.AsNoTracking().Where(p => p.UidOfCreator == uid && p.Date.ToString("dd-MM-yyyy") == date.ToString("dd-MM-yyyy")).ToListAsync();
-            return transfers;
+            if(date == null)
+            {
+                var transfers = await _context.Transfers.AsNoTracking().Where(p => p.UidOfCreator == uid).ToListAsync();
+                return transfers;
+            }
+            else
+            {
+                var transfers = await _context.Transfers.AsNoTracking().Where(p => p.UidOfCreator == uid && p.Date.Year == date.Value.Year && p.Date.Month == date.Value.Month &&  p.Date.Day == date.Value.Day).ToListAsync();
+                return transfers;
+            }
         }
 
         private async Task<bool> TransferValues(Transfer transfer)

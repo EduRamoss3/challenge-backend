@@ -11,5 +11,6 @@ namespace WL.Data.Repository.Interfaces
     {
         Task<User?> Register(User user); 
         Task<User?> AcceptToLogin(string email, string password);
+        Task<string?> GetNameById(Guid id);
     }
 }

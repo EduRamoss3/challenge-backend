@@ -1,14 +1,10 @@
 ﻿using challenge_backend.Extensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using WL.Application.DTO;
-using WL.Application.Services;
+using WL.Application.Extensions;
 using WL.Application.Services.Interfaces;
-using WL.Domain.Entities;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace challenge_backend.Controllers
 {
@@ -28,7 +24,7 @@ namespace challenge_backend.Controllers
 
         [HttpGet]
         [Route("get-transfers")]
-        public async Task<ActionResult<IEnumerable<Transfer?>>> GetTransfers(Guid uid, DateOnly dateBy)
+        public async Task<ActionResult<IEnumerable<TransferDTO?>>> GetTransfers(DateOnly? dateBy = null)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)
@@ -37,13 +33,13 @@ namespace challenge_backend.Controllers
             var transfers = await _transferService.Transfers(dateBy, authenticatedUserId.Value);
             if (transfers.Any())
             {
-                Ok(transfers);
+                return Ok(transfers);
             }
             return NoContent();
         }
         [HttpPost]
         [Route("transfer")]
-        public async Task<ActionResult<Transfer>> Transfer ([FromBody]TransferDTO request, [FromServices] IValidator<TransferDTO> validating)
+        public async Task<ActionResult<TransferDTO>> Transfer ([FromBody]TransferDTO request, [FromServices] IValidator<TransferDTO> validating)
         {
             var validation = validating.Validate(request);
             if (!validation.IsValid)
@@ -62,8 +58,7 @@ namespace challenge_backend.Controllers
             if (authenticatedUserId == null)
                 return Unauthorized("Authenticate first");
             var walletReceptorInformation = await _walletService.GetById(request.idWalletReceptor);
-
-            if(walletReceptorInformation == null)
+            if (walletReceptorInformation == null)
             {
                 return NotFound();
             }
@@ -71,7 +66,9 @@ namespace challenge_backend.Controllers
             var result = await _transferService.Transfer(request, authenticatedUserId.Value, walletReceptorInformation.UserId, request.idWalletReceptor);
             if (result.IsSuccess)
             {
-                return Created($"api/v1/transfer?id={result.Value?.Id}", request);
+                ResultTransfers resultTransfer = new(result.Value.IdWalletCreator, result.Value.IdWalletReceptor, result.Value.Date,result.Value.Amount, result.Value.NameReceptingUser);
+
+                return Created($"api/v1/transfer?id={result.Value?.Id}", resultTransfer);
             }
             return Problem(
             detail: result.Error,

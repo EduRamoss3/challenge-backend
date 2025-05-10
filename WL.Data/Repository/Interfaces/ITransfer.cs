@@ -10,6 +10,7 @@ namespace WL.Data.Repository.Interfaces
     public interface ITransfer
     {
         Task<Transfer?> Create(Transfer transfer);
-        Task<IEnumerable<Transfer?>> GetByDate(DateOnly date, Guid uid);
+        Task<IEnumerable<Transfer?>> GetByDate(DateOnly? date, Guid uid);
+
     }
 }

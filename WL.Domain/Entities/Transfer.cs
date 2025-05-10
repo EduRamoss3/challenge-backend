@@ -10,10 +10,11 @@ namespace WL.Domain.Entities
         public Guid IdWalletCreator { get; set; }
         public Guid IdWalletReceptor { get; set; }
         public DateTime Date { get; set; } 
+        public string NameReceptingUser { get; set; }
        
         public decimal Amount { get; private set; }
 
-        public Transfer(Guid uidOfCreator, Guid uidOfReceptor, DateTime date, decimal amount, Guid idWalletCreator, Guid idWalletReceptor)
+        public Transfer(Guid uidOfCreator, Guid uidOfReceptor, DateTime date, decimal amount, Guid idWalletCreator, Guid idWalletReceptor, string nameReceptingUser)
         {
             UidOfCreator = uidOfCreator;
             UidOfReceptor = uidOfReceptor;
@@ -21,8 +22,11 @@ namespace WL.Domain.Entities
             SetAmount(amount);
             IdWalletCreator = idWalletCreator;
             IdWalletReceptor = idWalletReceptor;
-
+            NameReceptingUser = nameReceptingUser;
         }
+
+      
+
         private void SetAmount(decimal amount)
         {
             Amount = amount;

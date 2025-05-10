@@ -12,10 +12,10 @@ namespace WL.Application.Services.Interfaces
 {
     public interface IWalletService 
     {
-        Task<Result<WalletDTO>> Create(Guid uid,  decimal amount);
+        Task<Result<ResultWallet>> Create(Guid uid,  decimal amount);
         Task<Result<decimal>> GetBalanceAfterVerifyAuthenticity(Guid uid, Guid idWallet);
         Task<Result<WalletDTO>> UpdateAfterVerifyAuthenticity(Guid uid, Guid idWallet, decimal amount);
-        Task<IEnumerable<Wallet?>> GetAll(Guid uid);
+        Task<IEnumerable<ResultWallet?>> GetAll(Guid uid);
         Task<Wallet?> GetById(Guid idWallet);
 
     }

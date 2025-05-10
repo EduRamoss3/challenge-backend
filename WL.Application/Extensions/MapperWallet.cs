@@ -24,7 +24,7 @@ namespace WL.Application.Extensions
             }
             return dtos;
         }
-        public static IEnumerable<WalletDTO?> WalletToEnumerableDTO(this IEnumerable<Wallet?> wallet)
+        public static IEnumerable<WalletDTO?> ToEnumerableWalletDTO(this IEnumerable<Wallet?> wallet)
         {
             List<WalletDTO?> wallets = new List<WalletDTO?>();
             foreach (var item in wallet)
@@ -32,6 +32,20 @@ namespace WL.Application.Extensions
                 wallets.Add(ToDTO(item));
             }
             return wallets;
+        }
+        public static IEnumerable<ResultWallet?> ToEnumerableResultWallet(this IEnumerable<Wallet?> wallet)
+        {
+            List<ResultWallet?> wallets = new List<ResultWallet?>();
+            foreach (var item in wallet)
+            {
+                ResultWallet resultWallet = new(item.Id, item.Amount);
+                wallets.Add(resultWallet);
+            }
+            return wallets;
+        }
+        public static ResultWallet ToResultWallet(this Wallet? wallet)
+        {
+            return new ResultWallet(wallet.Id, wallet.Amount);  
         }
     }
 }

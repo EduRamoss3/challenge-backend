@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using WL.Application.DTO;
+using WL.Application.Extensions;
 using WL.Application.Services;
 using WL.Application.Services.Interfaces;
 using WL.Data.Repository.Interfaces;
@@ -27,7 +28,7 @@ namespace challenge_backend.Controllers
         }
         [HttpGet]
         [Route("get-all")]
-        public async Task<ActionResult<IEnumerable<Wallet?>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ResultWallet?>>> GetAll()
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)
@@ -38,13 +39,13 @@ namespace challenge_backend.Controllers
         }
         [HttpPatch]
         [Route("update-balance")]
-        public async Task<ActionResult<decimal>> UpdateBalance(Guid walletId, [Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")] decimal amount)
+        public async Task<ActionResult<decimal>> UpdateBalance(Guid idWallet, [Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")] decimal amount)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)
                 return Unauthorized("Wallet do not match");
 
-            var result = await _walletService.UpdateAfterVerifyAuthenticity(authenticatedUserId.Value, walletId, amount);
+            var result = await _walletService.UpdateAfterVerifyAuthenticity(authenticatedUserId.Value, idWallet, amount);
             if (!result.IsSuccess)
             {
                 return Problem(
@@ -54,17 +55,17 @@ namespace challenge_backend.Controllers
               title: "Not founded",
               type: "https://httpstatuses.com/404");
             }
-            return Ok(result.Value);
+            return Created($"api/v1/Wallet/update-balance?amount={result.Value.amount}&idWallet={idWallet}",result.Value);
         }
         [HttpGet]
         [Route("get-balance")]
-        public async Task<ActionResult<decimal>> GetBalance(Guid walletId)
+        public async Task<ActionResult<decimal>> GetBalance(Guid idWallet)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)
                 return Unauthorized("Wallet do not match");
 
-            var balance = await _walletService.GetBalanceAfterVerifyAuthenticity(authenticatedUserId.Value, walletId);
+            var balance = await _walletService.GetBalanceAfterVerifyAuthenticity(authenticatedUserId.Value, idWallet);
             if (!balance.IsSuccess)
             {
                 return Problem(
@@ -78,7 +79,7 @@ namespace challenge_backend.Controllers
         }
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<WalletDTO?>> Create([Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")]decimal amount)
+        public async Task<ActionResult<ResultWallet>> Create([Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")]decimal amount)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)
@@ -104,7 +105,8 @@ namespace challenge_backend.Controllers
           title: result.Error + " Try again later.",
           type: "https://httpstatuses.com/400");
             }
-            return Created($"api/wallet?id={result.Value.ToString()}", result.Value);
+
+            return Created($"api/wallet?id={result.Value.IdWallet}", result.Value);
         }
     }
 }

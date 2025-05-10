@@ -21,26 +21,26 @@ namespace WL.Application.Services
             _work = work;
         }
 
-        public async Task<Result<WalletDTO>> Create(Guid uid, decimal amount)
+        public async Task<Result<ResultWallet>> Create(Guid uid, decimal amount)
         {
             var user = await _work.UserRepository.GetById(uid);
             if (user == null)
             {
-                return Result<WalletDTO>.Failure("Can't create a wallet without an existing user.");
+                return Result<ResultWallet>.Failure("Can't create a wallet without an existing user.");
             }
             Wallet wallet = new(uid, amount);
             var result = await _work.WalletRepository.Create(wallet);
             if (result == null)
             {
-                return Result<WalletDTO>.Failure("Verify all fields and try again later.");
+                return Result<ResultWallet>.Failure("Verify all fields and try again later.");
             }
 
-            return Result<WalletDTO>.Success(MapperWallet.ToDTO(result));
+            return Result<ResultWallet>.Success(MapperWallet.ToResultWallet(result));
         }
 
-        public async Task<IEnumerable<Wallet?>> GetAll(Guid uid)
+        public async Task<IEnumerable<ResultWallet?>> GetAll(Guid uid)
         {
-            return await _work.WalletRepository.GetAll(uid);
+            return MapperWallet.ToEnumerableResultWallet(await _work.WalletRepository.GetAll(uid));
         }
 
         public async Task<Result<decimal>> GetBalanceAfterVerifyAuthenticity(Guid uid, Guid idWallet)

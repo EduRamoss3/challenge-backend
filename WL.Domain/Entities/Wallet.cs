@@ -32,6 +32,9 @@ namespace WL.Domain.Entities
             UserId = userId;
             SetAmount(amount);
         }
-      
+        
+
+
+
     }
 }

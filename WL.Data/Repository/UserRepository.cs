@@ -29,6 +29,15 @@ namespace WL.Data.Repository
             return null;
         }
 
+        public async Task<string?> GetNameById(Guid id)
+        {
+            return await _context.Users
+                                 .Where(p => p.Id == id)
+                                 .Select(p => p.Name)
+                                 .SingleOrDefaultAsync();
+        }
+
+
         public async Task<User?> Register(User user)
         {
             try
