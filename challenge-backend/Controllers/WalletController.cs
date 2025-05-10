@@ -38,8 +38,8 @@ namespace challenge_backend.Controllers
             return wallets.Count() > 0 ? Ok(wallets) : NoContent();
         }
         [HttpPatch]
-        [Route("update-balance")]
-        public async Task<ActionResult<decimal>> UpdateBalance(Guid idWallet, [Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")] decimal amount)
+        [Route("deposit")]
+        public async Task<ActionResult<decimal>> Deposit(Guid idWallet, [FromBody][Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")] decimal amount)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)
@@ -55,11 +55,12 @@ namespace challenge_backend.Controllers
               title: "Not founded",
               type: "https://httpstatuses.com/404");
             }
-            return Created($"api/v1/Wallet/update-balance?amount={result.Value.amount}&idWallet={idWallet}",result.Value);
+            ResultWallet resultValue = new(idWallet, result.Value.amount);
+            return Created($"api/v1/Wallet/deposit?amount={result.Value.amount}&idWallet={idWallet}", resultValue);
         }
         [HttpGet]
         [Route("get-balance")]
-        public async Task<ActionResult<decimal>> GetBalance([FromBody]Guid idWallet)
+        public async Task<ActionResult<decimal>> GetBalance(Guid idWallet)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)

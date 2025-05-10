@@ -24,7 +24,7 @@ namespace challenge_backend.Controllers
 
         [HttpGet]
         [Route("get-transfers")]
-        public async Task<ActionResult<IEnumerable<TransferDTO?>>> GetTransfers([FromBody]DateOnly? dateBy = null)
+        public async Task<ActionResult<IEnumerable<TransferDTO?>>> GetTransfers(DateOnly? dateBy = null)
         {
             var authenticatedUserId = this.GetAuthenticatedUserId();
             if (authenticatedUserId == null)

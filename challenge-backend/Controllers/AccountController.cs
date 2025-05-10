@@ -57,7 +57,7 @@ namespace challenge_backend.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create([FromServices] IValidator<NormalUserDTO> validate, NormalUserDTO user)
+        public async Task<IActionResult> Create([FromServices] IValidator<NormalUserDTO> validate, [FromBody]NormalUserDTO user)
         {
             var validating = await validate.ValidateAsync(user);
             if (!validating.IsValid)
