@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WL.Data.Context;
 using WL.Data.Repository.Interfaces;
 using WL.Domain.Entities;
@@ -13,22 +8,24 @@ namespace WL.Data.Repository
 {
     public class UserRepository : Generic<User>, IUser
     {
-       
-        public UserRepository(AppDbContext context) : base(context)
+        private readonly ILogger<UserRepository> _logger;
+
+        public UserRepository(AppDbContext context, ILogger<UserRepository> logger) : base(context)
         {
+            _logger = logger;
         }
 
         public async Task<User?> AcceptToLogin(string email, string password)
         {
             var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Email.ToLower() == email.ToLower());
             if (user != null && !string.IsNullOrEmpty(password))
-           {
+            {
                 var passwordDecoded = Criptografer.DoubleDecode(user.Password);
-                if(passwordDecoded == password)
+                if (passwordDecoded == password)
                 {
                     return user;
                 }
-           }
+            }
             return null;
         }
 
@@ -42,13 +39,12 @@ namespace WL.Data.Repository
                 await _context.SaveChangesAsync();
                 return user;
             }
-            catch(Exception x)
+            catch (Exception ex)
             {
-                Console.BackgroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(x.Message + "| User Repository |" + "On date =" + DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
+                _logger.LogError(ex, "Unexpected error while saving user.");
                 return null;
             }
-            
+
         }
     }
 }

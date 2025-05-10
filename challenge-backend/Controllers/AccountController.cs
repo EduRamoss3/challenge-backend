@@ -22,7 +22,7 @@ namespace challenge_backend.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<User>> Login([FromServices] ITokenService _tokenService,string email, string password)
+        public async Task<ActionResult<User>> Login([FromServices] ITokenService _tokenService, string email,  string password)
         {
             var result = await _userService.Login(email, password);
             if (result != null)
@@ -61,15 +61,15 @@ namespace challenge_backend.Controllers
 
             var result = await _userService.RegisterNormalUser(user);
 
-            if (result.HasError)
+            if (!result.IsSuccess)
             {
                 return Problem("Verify all fields and try again");
             }
-            if (result._Entity == null)
+            if (result.Value == null)
             {
-                return Problem("Error creating new user, try again later");
+                return Problem(result.Error);
             }
-            return Created($"api/user/profile/", result._Entity);
+            return Created($"api/user/profile/", result.Value);
         }
     }
 }

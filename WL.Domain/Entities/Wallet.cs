@@ -22,6 +22,11 @@ namespace WL.Domain.Entities
             Amount += amount;
             return Amount;
         }
+        public decimal MakeTransfer(decimal amount)
+        {
+            Amount -= amount;
+            return Amount;
+        }
         public Wallet(Guid userId, decimal amount)
         {
             UserId = userId;

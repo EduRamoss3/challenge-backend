@@ -9,6 +9,6 @@ namespace WL.Data.Repository.Interfaces
 {
     public interface ITransfer
     {
-        Task<Transfer> Create(Guid uidReceptor, decimal amount, DateTime date);
+        Task<Transfer?> Create(Transfer transfer);
     }
 }

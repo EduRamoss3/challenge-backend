@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Extensions.Logging;
 using WL.Application.DTO;
 using WL.Application.Services.Interfaces;
 using WL.Data.Results;
@@ -10,9 +11,11 @@ namespace WL.Application.Services
     public class UserService : IUserService
     {
         private readonly IUnityOfWork _work;
-        public UserService(IUnityOfWork work)
+        private readonly ILogger<UserService> _logger;  
+        public UserService(IUnityOfWork work, ILogger<UserService> logger)
         {
             _work = work;
+            _logger = logger;
         }
 
         public async Task<User?> Login(string email, string password)
@@ -21,23 +24,26 @@ namespace WL.Application.Services
             
         }
 
-        public async Task<ResultServices> RegisterNormalUser(NormalUserDTO user)
+        public async Task<Result<User>> RegisterNormalUser(NormalUserDTO dto)
         {
-            var result = await _work.UserRepository.Register(user);
-            ResultServices msg = new ResultServices()
+            try
             {
-                _Entity = result,
-                HasError = false,
-            };
+                var user = new User(dto.Name, dto.Email, dto.Password); 
 
-            if (result == null)
-            {
-                msg.Message = "Error in register new user";
-                msg.HasError = true;
-                return msg;
+                var result = await _work.UserRepository.Register(user);
+
+                if (result == null)
+                {
+                    return Result<User>.Failure("Error in registering new user.");
+                }
+
+                return Result<User>.Success(result);
             }
-            msg.Message = "Successfully user created!";
-            return msg;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error while registering user.");
+                return Result<User>.Failure("Unexpected error occurred.");
+            }
         }
     }
 }

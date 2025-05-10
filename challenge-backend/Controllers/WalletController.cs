@@ -1,9 +1,11 @@
-﻿using challenge_backend.Helper;
+﻿using challenge_backend.Extensions;
+using challenge_backend.Helper;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using WL.Application.DTO;
 using WL.Application.Services;
 using WL.Application.Services.Interfaces;
@@ -12,79 +14,97 @@ using WL.Domain.Entities;
 
 namespace challenge_backend.Controllers
 {
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class WalletController : ControllerBase
     {
         private readonly IWalletService _walletService;
-
         public WalletController(IWalletService walletService)
         {
             _walletService = walletService;
         }
+        [HttpGet]
+        [Route("get-all")]
+        public async Task<ActionResult<IEnumerable<Wallet?>>> GetAll()
+        {
+            var authenticatedUserId = this.GetAuthenticatedUserId();
+            if (authenticatedUserId == null)
+                return Unauthorized("Wallet do not match");
+
+            var wallets = await _walletService.GetAll(authenticatedUserId.GetValueOrDefault());
+            return wallets.Count() > 0 ? Ok(wallets) : NoContent();
+        }
         [HttpPatch]
         [Route("update-balance")]
-        public async Task<ActionResult<decimal>> UpdateBalance(Guid uid, Guid walletId, [Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")] decimal amount)
+        public async Task<ActionResult<decimal>> UpdateBalance(Guid walletId, [Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")] decimal amount)
         {
-            var result = await _walletService.UpdateBalance(uid, walletId, amount);
-            if (result.HasError)
+            var authenticatedUserId = this.GetAuthenticatedUserId();
+            if (authenticatedUserId == null)
+                return Unauthorized("Wallet do not match");
+
+            var result = await _walletService.UpdateAfterVerifyAuthenticity(authenticatedUserId.Value, walletId, amount);
+            if (!result.IsSuccess)
             {
                 return Problem(
-              detail: "Wallet not found",
+              detail: result.Error,
               instance: HttpContext.Request.Path,
               statusCode: 404,
               title: "Not founded",
               type: "https://httpstatuses.com/404");
             }
-            return Ok(result._Entity);
+            return Ok(result.Value);
         }
         [HttpGet]
         [Route("get-balance")]
-        public async Task<ActionResult<decimal>> GetBalance(Guid uid, Guid walletId)
+        public async Task<ActionResult<decimal>> GetBalance(Guid walletId)
         {
-            var balance = await _walletService.GetBalance(uid, walletId);
-            if (balance.HasError)
+            var authenticatedUserId = this.GetAuthenticatedUserId();
+            if (authenticatedUserId == null)
+                return Unauthorized("Wallet do not match");
+
+            var balance = await _walletService.GetBalanceAfterVerifyAuthenticity(authenticatedUserId.Value, walletId);
+            if (!balance.IsSuccess)
             {
                 return Problem(
-              detail: "Wallet not found",
+              detail: balance.Error,
               instance: HttpContext.Request.Path,
               statusCode: 404,
-              title: "Not founded",
-              type: "https://httpstatuses.com/404");
+              title: balance.Error,
+              type: "https://httpstatuses.com/400");
             }
-            return Ok(balance._Entity);
+            return Ok(balance.Value);
         }
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<WalletDTO?>> Create([FromServices] IValidator<WalletDTO> validate, WalletDTO dto)
+        public async Task<ActionResult<WalletDTO?>> Create([Range(0.1, double.MaxValue, ErrorMessage = "The amount needs to be greater than zero")]decimal amount)
         {
-            var validating = await validate.ValidateAsync(dto);
-            if (!validating.IsValid)
-            {
-                validating.AddToModelState(this.ModelState);
+            var authenticatedUserId = this.GetAuthenticatedUserId();
+            if (authenticatedUserId == null)
+                return Unauthorized("Authenticate first");
+           
+            var result = await _walletService.Create(authenticatedUserId.Value, amount);
 
+            if (!result.IsSuccess)
+            {
                 return Problem(
-                detail: string.Join(" | ", ModelState.Values
-               .SelectMany(v => v.Errors)
-               .Select(e => e.ErrorMessage)),
-                instance: HttpContext.Request.Path,
-                statusCode: 400,
-                title: "Error of validation",
-                type: "https://httpstatuses.com/400"
-                );
+           detail: result.Error,
+           instance: HttpContext.Request.Path,
+           statusCode: 400,
+           title: result.Error,
+           type: "https://httpstatuses.com/400");
             }
-            var result = await _walletService.Create(dto);
-
-            if (result.HasError)
+            if(result.Value == null)
             {
-                return Problem(result.Message);
+                return  Problem(
+          detail: result.Error,
+          instance: HttpContext.Request.Path,
+          statusCode: 400,
+          title: result.Error + " Try again later.",
+          type: "https://httpstatuses.com/400");
             }
-            if (result._Entity == null)
-            {
-                return Problem("Error creating new wallet, try again later");
-            }
-            return Created($"api/wallet?id={result._Entity.ToString()}", result._Entity);
+            return Created($"api/wallet?id={result.Value.ToString()}", result.Value);
         }
     }
 }

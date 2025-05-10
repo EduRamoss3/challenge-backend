@@ -7,15 +7,19 @@ namespace WL.Domain.Entities
     {
         public Guid UidOfCreator { get; set; }
         public Guid UidOfReceptor { get; set; }
+        public Guid IdWalletCreator { get; set; }
+        public Guid IdWalletReceptor { get; set; }
         public DateTime Date { get; set; } 
         public decimal Amount { get; private set; }
 
-        public Transfer(Guid uidOfCreator, Guid uidOfReceptor, DateTime date, decimal amount)
+        public Transfer(Guid uidOfCreator, Guid uidOfReceptor, DateTime date, decimal amount, Guid idWalletCreator, Guid idWalletReceptor)
         {
             UidOfCreator = uidOfCreator;
             UidOfReceptor = uidOfReceptor;
             Date = date;
             SetAmount(amount);
+            IdWalletCreator = idWalletCreator;
+            IdWalletReceptor = idWalletReceptor;
 
         }
         private void SetAmount(decimal amount)

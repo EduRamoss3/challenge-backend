@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WL.Data.Context;
 using WL.Data.Repository.Interfaces;
 using WL.Data.Results;
@@ -9,8 +10,10 @@ namespace WL.Data.Repository
 {
     public class WalletRepository : Generic<Wallet>,IWallet
     {
-        public WalletRepository(AppDbContext context) : base(context)
+        private readonly ILogger<WalletRepository> _logger;
+        public WalletRepository(AppDbContext context, ILogger<WalletRepository> logger) : base(context)
         {
+            _logger = logger;
         }
         public async Task<Wallet?> Update(Guid id, decimal amount)
         {
@@ -24,7 +27,9 @@ namespace WL.Data.Repository
             }
             return null;
         }
-        public async Task<Wallet> Create(Wallet wallet)
+
+      
+        public async Task<Wallet?> Create(Wallet wallet)
         {
             try
             {
@@ -32,10 +37,9 @@ namespace WL.Data.Repository
                 await _context.SaveChangesAsync();
                 return wallet;
             }
-            catch(Exception x)
+            catch(Exception ex)
             {
-                Console.BackgroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(x.Message + "| Wallet Repository |" + "On date =" + DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
+                _logger.LogError(ex, "Unexpected error while creating wallet.");
                 return null;
             }
         }
@@ -43,6 +47,11 @@ namespace WL.Data.Repository
         {
            return await _context.Wallets.AsNoTracking().Where(p => p.UserId == uid && p.Id == idWallet).SingleOrDefaultAsync();
 
+        }
+
+        public async Task<IEnumerable<Wallet?>> GetAll(Guid uid)
+        {
+            return await _context.Wallets.AsNoTracking().Where(p => p.UserId == uid ).ToListAsync();
         }
     }
 }

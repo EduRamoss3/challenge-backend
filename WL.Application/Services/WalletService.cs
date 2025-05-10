@@ -21,91 +21,80 @@ namespace WL.Application.Services
             _work = work;
         }
 
-        public async Task<ResultServices> Create(WalletDTO dto)
+        public async Task<Result<WalletDTO>> Create(Guid uid, decimal amount)
         {
-            ResultServices msg = new()
+            var user = await _work.UserRepository.GetById(uid);
+            if (user == null)
             {
-                HasError = true,
-            };
-            var user = await _work.UserRepository.GetById(dto.uid);
+                return Result<WalletDTO>.Failure("Can't create a wallet without an existing user.");
+            }
+            Wallet wallet = new(uid, amount);
+            var result = await _work.WalletRepository.Create(wallet);
+            if (result == null)
+            {
+                return Result<WalletDTO>.Failure("Verify all fields and try again later.");
+            }
 
-            if(user != null)
-            {
-                var result = await _work.WalletRepository.Create(dto);
-                if(result != null)
-                {
-                    msg.Message = "Wallet Successfully created!";
-                    msg._Entity = result.Id;
-                    msg.HasError = false;
-                    return msg;
-                }
-                msg.Message = "Verify all fields and try again later!";
-                msg._Entity = dto;
-                msg.HasError = true;
-                return msg;
-            }
-            else
-            {
-                msg._Entity = null;
-                msg.HasError = true;
-                msg.Message = "Can't create one wallet without existing user";
-                return msg;
-            }
-            
-            
+            return Result<WalletDTO>.Success(MapperWallet.ToDTO(result));
         }
 
-        public async Task<ResultServices> GetBalance(Guid uid, Guid idWallet)
+        public async Task<IEnumerable<Wallet?>> GetAll(Guid uid)
         {
-            ResultServices result = new()
+            return await _work.WalletRepository.GetAll(uid);
+        }
+
+        public async Task<Result<decimal>> GetBalanceAfterVerifyAuthenticity(Guid uid, Guid idWallet)
+        {
+            var verify = await VerifyIsOfMyAccount(idWallet, uid);
+            if (!verify.IsSuccess)
             {
-                HasError = false,
-            };
+                return Result<decimal>.Failure("Not found");
+            }
             var wallet = await _work.WalletRepository.SearchWallet(uid, idWallet);
             if (wallet == null)
             {
-                result.HasError = true;
-                result.Message = "Wallet not found";
-                result._Entity = null;
-                return result;
+                return Result<decimal>.Failure("Wallet not found.");
             }
-            result.Message = "Getting balance.";
-            result._Entity = wallet.GetBalance();
-            return result;
+
+            var balance = wallet.GetBalance();
+            return Result<decimal>.Success(balance);
         }
 
-        public async Task<ResultServices> UpdateBalance(Guid uid, Guid idWallet, decimal amount)
+        public async Task<Result<WalletDTO>> UpdateAfterVerifyAuthenticity(Guid uid, Guid idWallet, decimal amount)
         {
-            ResultServices msg = new()
+            var verify = await VerifyIsOfMyAccount(idWallet, uid);
+            if (!verify.IsSuccess)
             {
-                HasError = true,
-            };
+                return verify;
+            }
+
             var user = await _work.UserRepository.GetById(uid);
+            if (user == null)
+                return Result<WalletDTO>.Failure("Not found");
 
-            if (user != null)
+            // Verificando se o wallet é do proprio usuario
+            var wallet = await _work.WalletRepository.GetById(idWallet);
+
+            var result = await _work.WalletRepository.Update(idWallet, amount);
+            if (result == null)
+                return Result<WalletDTO>.Failure("Wallet not found.");
+
+            return Result<WalletDTO>.Success(MapperWallet.ToDTO(result));
+
+        }
+        private async Task<Result<WalletDTO>> VerifyIsOfMyAccount(Guid idWallet, Guid uid)
+        {
+            // Verificando
+            var wallet = await _work.WalletRepository.GetById(idWallet);
+            if(wallet == null)
             {
-                var result = await _work.WalletRepository.Update(idWallet, amount);
-
-                if (result != null)
-                {
-                    msg.Message = "Successfully updated!";
-                    msg._Entity = result;
-                    msg.HasError = false;
-                    return msg;
-                }
-                msg.Message = "Not found wallet!";
-                msg._Entity = null;
-                msg.HasError = true;
-                return msg;
+                return Result<WalletDTO>.Failure("This wallet dont exist");
             }
-            else
+            if (wallet.UserId != uid)
             {
-                msg._Entity = null;
-                msg.HasError = true;
-                msg.Message = "Can't create one wallet without existing user";
-                return msg;
+                return Result<WalletDTO>.Failure("This wallet dont exist");
             }
-
+            return Result<WalletDTO>.Success(MapperWallet.ToDTO(wallet));
         }
 
 

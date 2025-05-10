@@ -7,7 +7,7 @@ namespace WL.Application.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<ResultServices> RegisterNormalUser(NormalUserDTO user);
+        Task<Result<User>> RegisterNormalUser(NormalUserDTO user);
         Task<User?> Login(string email, string password);
     }
 }
