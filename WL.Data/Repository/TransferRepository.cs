@@ -28,6 +28,13 @@ namespace WL.Data.Repository
             }
             return null;
         }
+
+        public async Task<IEnumerable<Transfer?>> GetByDate(DateOnly date, Guid uid)
+        {
+            var transfers = await _context.Transfers.AsNoTracking().Where(p => p.UidOfCreator == uid && p.Date.ToString("dd-MM-yyyy") == date.ToString("dd-MM-yyyy")).ToListAsync();
+            return transfers;
+        }
+
         private async Task<bool> TransferValues(Transfer transfer)
         {
             var walletSending = await _context.Wallets.SingleOrDefaultAsync(p => p.UserId == transfer.UidOfCreator && p.Id == transfer.IdWalletCreator);
@@ -43,7 +50,7 @@ namespace WL.Data.Repository
             walletReceptor.SetAmount(transfer.Amount);
             _context.Entry(walletReceptor).Property(p => p.Amount).IsModified = true;
 
-            return false;
+            return true;
         }
        
     }

@@ -60,6 +60,11 @@ namespace WL.Application.Services
             return Result<decimal>.Success(balance);
         }
 
+        public async Task<Wallet?> GetById(Guid idWallet)
+        {
+            return await _work.WalletRepository.GetById(idWallet);
+        }
+
         public async Task<Result<WalletDTO>> UpdateAfterVerifyAuthenticity(Guid uid, Guid idWallet, decimal amount)
         {
             var verify = await VerifyIsOfMyAccount(idWallet, uid);

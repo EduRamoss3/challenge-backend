@@ -20,34 +20,30 @@ namespace WL.Application.Services
             _logger = logger;
         }
 
-        public async Task<Result<Transfer>> Transfer(Transfer transfer)
+        public async Task<Result<Transfer>> Transfer(TransferDTO transfer, Guid uid, Guid uidReceptor, Guid idWalletReceptor)
         {
-            var authenticity = await VerifyIsOfMyAccount(transfer.IdWalletCreator, transfer.UidOfCreator);
+            var authenticity = await VerifyIsOfMyAccount(transfer.idWalletCreator, uid);
             if (authenticity.IsSuccess)
             {
-                var authorizeBalance = await VerifyBalanceRequested(transfer.IdWalletCreator, transfer.UidOfCreator, transfer.Amount);
+                var authorizeBalance = await VerifyBalanceRequested(transfer.idWalletCreator, uid, transfer.amount);
                 if (authorizeBalance.IsSuccess)
                 {
-                   var result = await _work.TransferRepository.Create(transfer);
+                   Transfer transfered = new(uid, uidReceptor, DateTime.UtcNow, transfer.amount, transfer.idWalletCreator, transfer.idWalletReceptor);
+                    var result = await _work.TransferRepository.Create(transfered);
                    if(result == null)
                    {
                        return Result<Transfer>.Failure("Error on made your requesting, try again later");
                    }
-                    return Result<Transfer>.Success(transfer);
+                    return Result<Transfer>.Success(transfered);
                 }
                 return Result<Transfer>.Failure("Verify your balance and the amount sending.");
             }
             return Result<Transfer>.Failure("Authenticity not assigned");
         }
 
-        public async Task<IEnumerable<Transfer?>> Transfers(Guid uid)
+        public async Task<IEnumerable<Transfer?>> Transfers(DateOnly byDate, Guid uid)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Transfer?>> Transfers(DateOnly byDate)
-        {
-            throw new NotImplementedException();
+            return await _work.TransferRepository.GetByDate(byDate, uid);
         }
 
         private async Task<Result<bool>> VerifyIsOfMyAccount(Guid idWallet, Guid uid)
@@ -76,10 +72,15 @@ namespace WL.Application.Services
             {
                 return Result<bool>.Failure("This wallet dont exist - ER 32");
             }
-            if((wallet.GetBalance() - balanceRequested < 0))
+            if (wallet.GetBalance() < 0)
             {
                 return Result<bool>.Failure("Insuficient cash.");
             }
+            if ((wallet.GetBalance() - balanceRequested < 0))
+            {
+                return Result<bool>.Failure("Insuficient cash.");
+            }
+          
             return Result<bool>.Success(true);
         }
     }

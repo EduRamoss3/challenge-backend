@@ -16,6 +16,7 @@ namespace WL.Application.Services.Interfaces
         Task<Result<decimal>> GetBalanceAfterVerifyAuthenticity(Guid uid, Guid idWallet);
         Task<Result<WalletDTO>> UpdateAfterVerifyAuthenticity(Guid uid, Guid idWallet, decimal amount);
         Task<IEnumerable<Wallet?>> GetAll(Guid uid);
+        Task<Wallet?> GetById(Guid idWallet);
 
     }
 }

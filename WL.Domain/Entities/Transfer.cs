@@ -10,6 +10,7 @@ namespace WL.Domain.Entities
         public Guid IdWalletCreator { get; set; }
         public Guid IdWalletReceptor { get; set; }
         public DateTime Date { get; set; } 
+       
         public decimal Amount { get; private set; }
 
         public Transfer(Guid uidOfCreator, Guid uidOfReceptor, DateTime date, decimal amount, Guid idWalletCreator, Guid idWalletReceptor)

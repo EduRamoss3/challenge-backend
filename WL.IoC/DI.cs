@@ -34,8 +34,7 @@ namespace WL.IoC
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IValidator<NormalUserDTO>,UserDTOValidation>();
             services.AddScoped<IValidator<WalletDTO>, WalletDTOValidation>();
-
-
+            services.AddScoped<IValidator<TransferDTO>, TransferDTOValidation>();
 
             return services;
         }
