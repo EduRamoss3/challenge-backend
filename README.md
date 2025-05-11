@@ -43,13 +43,13 @@ Utilize o json
 Utilize o json </br>
 {"amount": 100}   </br>
 
-PATCH /api/v1/Wallet/deposit?idWallet={guid}: Deposita  -json
+* PATCH /api/v1/Wallet/deposit?idWallet={guid}: Deposita  json
 {"amount": 50}  </br>
 
 ### Transferências
-GET /api/v1/Transfer/get-transfers?dateBy=yyyy-MM-dd: Lista transferências </br>
+* GET /api/v1/Transfer/get-transfers?dateBy=yyyy-MM-dd: Lista transferências (filtro date opcional)</br>
 
-POST /api/v1/Transfer/transfer: Transfere </br>
+* POST /api/v1/Transfer/transfer: Transfere </br>
 Utilize o json
 {  </br>
   "idWalletCreator": "guid",   </br>
